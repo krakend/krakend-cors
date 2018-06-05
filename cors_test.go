@@ -76,8 +76,7 @@ func TestDefaultConfiguration(t *testing.T) {
 func TestWrongOrEmptyConfiguration(t *testing.T) {
 	sampleCfg := map[string]interface{}{}
 	if _, ok := ConfigGetter(sampleCfg).(Config); ok {
-		t.
-			Error("The config should be nil\n")
+		t.Error("The config should be nil\n")
 	}
 	badCfg := map[string]interface{}{Namespace: "test"}
 	if _, ok := ConfigGetter(badCfg).(Config); ok {
