@@ -1,12 +1,12 @@
 package gin
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
-	"github.com/devopsfaith/krakend-cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,14 +19,14 @@ func TestInvalidCfg(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	gin.SetMode(gin.ReleaseMode)
-	sampleCfg := map[string]interface{}{
-		cors.Namespace: map[string]interface{}{
-			"allow_origins": []string{"http://foobar.com"},
-			"allow_methods": []string{"POST", "GET"},
-			"max_age":       "2h",
-		},
-	}
+	sampleCfg := map[string]interface{}{}
+	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+			"allow_origins": [ "http://foobar.com" ],
+			"allow_methods": [ "POST", "GET" ],
+			"max_age": "2h"
+			}
+		}`)
+	json.Unmarshal(serialized, &sampleCfg)
 	e := gin.Default()
 	corsMw := New(sampleCfg)
 	if corsMw == nil {

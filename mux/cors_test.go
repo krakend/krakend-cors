@@ -1,12 +1,11 @@
 package mux
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
-
-	krakendcors "github.com/devopsfaith/krakend-cors"
 )
 
 func TestInvalidCfg(t *testing.T) {
@@ -18,13 +17,14 @@ func TestInvalidCfg(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	sampleCfg := map[string]interface{}{
-		krakendcors.Namespace: map[string]interface{}{
-			"allow_origins": []string{"http://foobar.com"},
-			"allow_methods": []string{"GET"},
-			"max_age":       "2h",
-		},
-	}
+	sampleCfg := map[string]interface{}{}
+	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+			"allow_origins": [ "http://foobar.com" ],
+			"allow_methods": [ "GET" ],
+			"max_age": "2h"
+			}
+		}`)
+	json.Unmarshal(serialized, &sampleCfg)
 	h := New(sampleCfg)
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)

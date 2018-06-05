@@ -33,45 +33,41 @@ func ConfigGetter(e config.ExtraConfig) interface{} {
 	}
 
 	cfg := Config{}
-
-	if allowOrigins, ok := tmp["allow_origins"]; ok {
-		if v, ok := allowOrigins.([]string); ok {
-			cfg.AllowOrigins = v
-		}
+	allowOrigins := getList(tmp, "allow_origins")
+	if len(allowOrigins) > 0 {
+		cfg.AllowOrigins = allowOrigins
 	} else {
 		return nil
 	}
 
-	if allowMethods, ok := tmp["allow_methods"]; ok {
-		if v, ok := allowMethods.([]string); ok {
-			cfg.AllowMethods = v
-		}
-	}
+	cfg.AllowMethods = getList(tmp, "allow_methods")
+	cfg.AllowHeaders = getList(tmp, "allow_headers")
+	cfg.ExposeHeaders = getList(tmp, "expose_headers")
 
-	if allowHeaders, ok := tmp["allow_headers"]; ok {
-		if v, ok := allowHeaders.([]string); ok {
-			cfg.AllowHeaders = v
-		}
-	}
-
-	if exposeHeaders, ok := tmp["expose_headers"]; ok {
-		if v, ok := exposeHeaders.([]string); ok {
-			cfg.ExposeHeaders = v
-		}
-	}
-
-	//cfg.AllowCredentials = true
 	if allowCredentials, ok := tmp["allow_credentials"]; ok {
 		if v, ok := allowCredentials.(bool); ok {
 			cfg.AllowCredentials = v
 		}
 	}
 
-	//cfg.MaxAge = 12 * time.Hour
 	if maxAge, ok := tmp["max_age"]; ok {
 		if d, err := time.ParseDuration(maxAge.(string)); err == nil {
 			cfg.MaxAge = d
 		}
 	}
 	return cfg
+}
+
+func getList(data map[string]interface{}, name string) []string {
+	out := []string{}
+	if vs, ok := data[name]; ok {
+		if v, ok := vs.([]interface{}); ok {
+			for _, s := range v {
+				if j, ok := s.(string); ok {
+					out = append(out, j)
+				}
+			}
+		}
+	}
+	return out
 }
