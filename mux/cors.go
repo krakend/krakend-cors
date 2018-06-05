@@ -1,15 +1,15 @@
 package mux
 
 import (
-	"net/http"
-
 	krakendcors "github.com/devopsfaith/krakend-cors"
 	"github.com/devopsfaith/krakend/config"
+	"github.com/devopsfaith/krakend/router/mux"
 	"github.com/rs/cors"
 )
 
-// New returns a http.Handler with the defined CORS options in the ExtraConfig.
-func New(e config.ExtraConfig) http.Handler {
+// New returns a mux.HandlerMiddleware (wich implements the http.Handler interface)
+// with the CORS configuration defined in the ExtraConfig.
+func New(e config.ExtraConfig) mux.HandlerMiddleware {
 	tmp := krakendcors.ConfigGetter(e)
 	if tmp != nil {
 		if cfg, ok := tmp.(krakendcors.Config); ok {
@@ -20,7 +20,7 @@ func New(e config.ExtraConfig) http.Handler {
 				ExposedHeaders:   cfg.ExposeHeaders,
 				AllowCredentials: cfg.AllowCredentials,
 				MaxAge:           int(cfg.MaxAge.Seconds()),
-			}).Handler(http.NewServeMux())
+			})
 		}
 	}
 	return nil

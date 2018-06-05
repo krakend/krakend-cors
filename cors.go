@@ -42,35 +42,32 @@ func ConfigGetter(e config.ExtraConfig) interface{} {
 		return nil
 	}
 
-	cfg.AllowMethods = []string{"HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"}
 	if allowMethods, ok := tmp["allow_methods"]; ok {
 		if v, ok := allowMethods.([]string); ok {
 			cfg.AllowMethods = v
 		}
 	}
 
-	cfg.AllowHeaders = []string{"Origin", "Authorization", "Content-Type"}
 	if allowHeaders, ok := tmp["allow_headers"]; ok {
 		if v, ok := allowHeaders.([]string); ok {
 			cfg.AllowHeaders = v
 		}
 	}
 
-	cfg.ExposeHeaders = []string{"Content-Length"}
 	if exposeHeaders, ok := tmp["expose_headers"]; ok {
 		if v, ok := exposeHeaders.([]string); ok {
 			cfg.ExposeHeaders = v
 		}
 	}
 
-	cfg.AllowCredentials = true
+	//cfg.AllowCredentials = true
 	if allowCredentials, ok := tmp["allow_credentials"]; ok {
 		if v, ok := allowCredentials.(bool); ok {
 			cfg.AllowCredentials = v
 		}
 	}
 
-	cfg.MaxAge = 12 * time.Hour
+	//cfg.MaxAge = 12 * time.Hour
 	if maxAge, ok := tmp["max_age"]; ok {
 		if d, err := time.ParseDuration(maxAge.(string)); err == nil {
 			cfg.MaxAge = d

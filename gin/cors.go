@@ -11,8 +11,15 @@ import (
 func New(e config.ExtraConfig) gin.HandlerFunc {
 	tmp := krakendcors.ConfigGetter(e)
 	if tmp != nil {
-		if cfg, ok := tmp.(cors.Config); ok {
-			return cors.New(cfg)
+		if cfg, ok := tmp.(krakendcors.Config); ok {
+			return cors.New(cors.Config{
+				AllowOrigins:     cfg.AllowOrigins,
+				AllowMethods:     cfg.AllowMethods,
+				AllowHeaders:     cfg.AllowHeaders,
+				ExposeHeaders:    cfg.ExposeHeaders,
+				AllowCredentials: cfg.AllowCredentials,
+				MaxAge:           cfg.MaxAge,
+			})
 		}
 	}
 	return nil

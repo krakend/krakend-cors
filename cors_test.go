@@ -64,10 +64,9 @@ func TestDefaultConfiguration(t *testing.T) {
 			"allow_origins": []string{"http://www.example.com"},
 		},
 	}
-
 	defaultCfg := ConfigGetter(sampleCfg).(Config)
-	if len(defaultCfg.AllowMethods) != 6 {
-		t.Errorf("The default AllowMethods number should be 6 not %d.", len(defaultCfg.AllowMethods))
+	if defaultCfg.AllowOrigins[0] != "http://www.example.com" {
+		t.Error("Wrong AllowOrigin.\n")
 	}
 }
 
