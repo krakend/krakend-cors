@@ -10,17 +10,19 @@ import (
 // New returns a gin.HandlerFunc with the CORS configuration provided in the ExtraConfig
 func New(e config.ExtraConfig) gin.HandlerFunc {
 	tmp := krakendcors.ConfigGetter(e)
-	if tmp != nil {
-		if cfg, ok := tmp.(krakendcors.Config); ok {
-			return cors.New(cors.Config{
-				AllowOrigins:     cfg.AllowOrigins,
-				AllowMethods:     cfg.AllowMethods,
-				AllowHeaders:     cfg.AllowHeaders,
-				ExposeHeaders:    cfg.ExposeHeaders,
-				AllowCredentials: cfg.AllowCredentials,
-				MaxAge:           cfg.MaxAge,
-			})
-		}
+	if tmp == nil {
+		return nil
 	}
-	return nil
+	cfg, ok := tmp.(krakendcors.Config)
+	if !ok {
+		return nil
+	}
+	return cors.New(cors.Config{
+		AllowOrigins:     cfg.AllowOrigins,
+		AllowMethods:     cfg.AllowMethods,
+		AllowHeaders:     cfg.AllowHeaders,
+		ExposeHeaders:    cfg.ExposeHeaders,
+		AllowCredentials: cfg.AllowCredentials,
+		MaxAge:           cfg.MaxAge,
+	})
 }

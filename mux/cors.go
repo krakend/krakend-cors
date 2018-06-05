@@ -11,17 +11,21 @@ import (
 // with the CORS configuration defined in the ExtraConfig.
 func New(e config.ExtraConfig) mux.HandlerMiddleware {
 	tmp := krakendcors.ConfigGetter(e)
-	if tmp != nil {
-		if cfg, ok := tmp.(krakendcors.Config); ok {
-			return cors.New(cors.Options{
-				AllowedOrigins:   cfg.AllowOrigins,
-				AllowedMethods:   cfg.AllowMethods,
-				AllowedHeaders:   cfg.AllowHeaders,
-				ExposedHeaders:   cfg.ExposeHeaders,
-				AllowCredentials: cfg.AllowCredentials,
-				MaxAge:           int(cfg.MaxAge.Seconds()),
-			})
-		}
+	if tmp == nil {
+		return nil
 	}
-	return nil
+	cfg, ok := tmp.(krakendcors.Config)
+	if !ok {
+		return nil
+	}
+
+	return cors.New(cors.Options{
+		AllowedOrigins:   cfg.AllowOrigins,
+		AllowedMethods:   cfg.AllowMethods,
+		AllowedHeaders:   cfg.AllowHeaders,
+		ExposedHeaders:   cfg.ExposeHeaders,
+		AllowCredentials: cfg.AllowCredentials,
+		MaxAge:           int(cfg.MaxAge.Seconds()),
+	})
+
 }
