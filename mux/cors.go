@@ -7,7 +7,7 @@ import (
 	"github.com/rs/cors"
 )
 
-// New returns a mux.HandlerMiddleware (wich implements the http.Handler interface)
+// New returns a mux.HandlerMiddleware (which implements the http.Handler interface)
 // with the CORS configuration defined in the ExtraConfig.
 func New(e config.ExtraConfig) mux.HandlerMiddleware {
 	tmp := krakendcors.ConfigGetter(e)
