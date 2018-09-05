@@ -73,7 +73,7 @@ func TestDefaultConfiguration(t *testing.T) {
 	}
 }
 
-func TestWrongOrEmptyConfiguration(t *testing.T) {
+func TestWrongConfiguration(t *testing.T) {
 	sampleCfg := map[string]interface{}{}
 	if _, ok := ConfigGetter(sampleCfg).(Config); ok {
 		t.Error("The config should be nil\n")
@@ -82,15 +82,15 @@ func TestWrongOrEmptyConfiguration(t *testing.T) {
 	if _, ok := ConfigGetter(badCfg).(Config); ok {
 		t.Error("The config should be nil\n")
 	}
+}
 
+func TestEmptyConfiguration(t *testing.T) {
 	noOriginCfg := map[string]interface{}{}
 	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
-			"allow_origins": "",
-			"allow_headers": [ "Content-Type" ]
 			}
 		}`)
 	json.Unmarshal(serialized, &noOriginCfg)
-	if v, ok := ConfigGetter(noOriginCfg).(Config); ok {
-		t.Errorf("The configuration should be nil, the Origin must not be empty: %v\n", v)
+	if v, ok := ConfigGetter(noOriginCfg).(Config); !ok {
+		t.Errorf("The configuration should not be empty: %v\n", v)
 	}
 }
