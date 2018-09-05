@@ -52,6 +52,59 @@ func TestNew(t *testing.T) {
 
 }
 
+func TestAllowOriginWildcard(t *testing.T) {
+	sampleCfg := map[string]interface{}{}
+	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+			"allow_origins": [ "*" ]
+			}
+		}`)
+	json.Unmarshal(serialized, &sampleCfg)
+	e := gin.Default()
+	corsMw := New(sampleCfg)
+	if corsMw == nil {
+		t.Error("The cors middleware should not be nil.\n")
+	}
+	e.Use(corsMw)
+	e.GET("/foo", func(c *gin.Context) { c.String(200, "Yeah") })
+	res := httptest.NewRecorder()
+	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
+	req.Header.Add("Origin", "http://foobar.com")
+	e.ServeHTTP(res, req)
+	if res.Code != 200 {
+		t.Errorf("Invalid status code: %d should be 200", res.Code)
+	}
+
+	assertHeaders(t, res.Header(), map[string]string{
+		"Access-Control-Allow-Origin": "*",
+	})
+}
+
+func TestAllowOriginEmpty(t *testing.T) {
+	sampleCfg := map[string]interface{}{}
+	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+			}
+		}`)
+	json.Unmarshal(serialized, &sampleCfg)
+	e := gin.Default()
+	corsMw := New(sampleCfg)
+	if corsMw == nil {
+		t.Error("The cors middleware should not be nil.\n")
+	}
+	e.Use(corsMw)
+	e.GET("/foo", func(c *gin.Context) { c.String(200, "Yeah") })
+	res := httptest.NewRecorder()
+	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
+	req.Header.Add("Origin", "http://foobar.com")
+	e.ServeHTTP(res, req)
+	if res.Code != 200 {
+		t.Errorf("Invalid status code: %d should be 200", res.Code)
+	}
+
+	assertHeaders(t, res.Header(), map[string]string{
+		"Access-Control-Allow-Origin": "*",
+	})
+}
+
 var allHeaders = []string{
 	"Vary",
 	"Access-Control-Allow-Origin",

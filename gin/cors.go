@@ -17,7 +17,22 @@ func New(e config.ExtraConfig) gin.HandlerFunc {
 	if !ok {
 		return nil
 	}
+
+	var allowAllOrigins bool
+	if len(cfg.AllowOrigins) == 0 {
+		allowAllOrigins = true
+	} else {
+		for _, origin := range cfg.AllowOrigins {
+			if origin == "*" {
+				allowAllOrigins = true
+				cfg.AllowOrigins = nil
+				break
+			}
+		}
+	}
+
 	return cors.New(cors.Config{
+		AllowAllOrigins:  allowAllOrigins,
 		AllowOrigins:     cfg.AllowOrigins,
 		AllowMethods:     cfg.AllowMethods,
 		AllowHeaders:     cfg.AllowHeaders,
