@@ -43,6 +43,32 @@ func TestNew(t *testing.T) {
 	})
 }
 
+func TestAllowOriginEmpty(t *testing.T) {
+	sampleCfg := map[string]interface{}{}
+	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+			}
+		}`)
+	json.Unmarshal(serialized, &sampleCfg)
+	h := New(sampleCfg)
+	res := httptest.NewRecorder()
+	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
+	req.Header.Add("Access-Control-Request-Method", "GET")
+	req.Header.Add("Access-Control-Request-Headers", "origin")
+	req.Header.Add("Origin", "http://foobar.com")
+	handler := h.Handler(testHandler)
+	handler.ServeHTTP(res, req)
+	if res.Code != 200 {
+		t.Errorf("Invalid status code: %d should be 200", res.Code)
+	}
+
+	assertHeaders(t, res.Header(), map[string]string{
+		"Vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+		"Access-Control-Allow-Origin":  "*",
+		"Access-Control-Allow-Methods": "GET",
+		"Access-Control-Allow-Headers": "Origin",
+	})
+}
+
 var allHeaders = []string{
 	"Vary",
 	"Access-Control-Allow-Origin",
