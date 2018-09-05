@@ -1,3 +1,5 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/devopsfaith/krakend-cors)](https://goreportcard.com/report/github.com/devopsfaith/krakend-cors)  [![GoDoc](https://godoc.org/github.com/devopsfaith/krakend-cors?status.svg)](https://godoc.org/github.com/devopsfaith/krakend-cors)
+
 KrakenD CORS
 ====
 
