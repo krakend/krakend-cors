@@ -15,8 +15,9 @@ Check the tests and the documentation for more details
 ## Configuration
 
 You need to add an ExtraConfig section to the configuration to enable the CORS middleware.
+At least one option should be defined.
 
-- `allow_origins` list of strings (must be defined or the middleware will be disabled, you can also use a wildcard)
+- `allow_origins` list of strings (you can also use a wildcard, leaving it empty allows all origins too)
 - `allow_headers` list of strings
 - `allow_methods` list of strings
 - `expose_headers` list of strings
@@ -25,7 +26,6 @@ You need to add an ExtraConfig section to the configuration to enable the CORS m
 
 ### Configuration Example
 
-This configuration will set the _collection time_ to 2 minutes and will disable the proxy metrics collector (backend and router metrics will be enabled since the default for all layers is to be enabled).
 ```
   "extra_config": {
     "github_com/devopsfaith/krakend-cors": {
@@ -36,9 +36,11 @@ This configuration will set the _collection time_ to 2 minutes and will disable 
   }
   ```
 
-  or leave the defaults:
+  or leave the defaults (the defaults allows all origins):
   ```
   "extra_config": {
-    github_com/devopsfaith/krakend-metrics": {}
+    github_com/devopsfaith/krakend-metrics": {
+      "allow_origins": []
+    }
   }
   ```
