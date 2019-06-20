@@ -1,9 +1,8 @@
 package cors
 
 import (
-	"time"
-
 	"github.com/devopsfaith/krakend/config"
+	"time"
 )
 
 // Namespace is the key to look for extra configuration details

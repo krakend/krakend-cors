@@ -3,8 +3,8 @@ package gin
 import (
 	krakendcors "github.com/devopsfaith/krakend-cors"
 	"github.com/devopsfaith/krakend/config"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/gin-contrib/cors.v1"
 )
 
 // New returns a gin.HandlerFunc with the CORS configuration provided in the ExtraConfig
