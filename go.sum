@@ -1,7 +1,6 @@
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/devopsfaith/krakend v0.0.0-20190616151918-b11cce82be2d/go.mod h1:yxQ154W+9WspAsoGcnsttb30YJHuSbDZivUdLH09PiA=
-github.com/devopsfaith/krakend-cors v0.0.0-20180906120953-c9b7eb26914f/go.mod h1:SfEPjpj9yPu5q8g76LHTieJeerM0e6qfzN8pmjSdUDc=
 github.com/gin-contrib/cors v1.3.0 h1:PolezCc89peu+NgkIWt9OB01Kbzt6IP0J/JvkG6xxlg=
 github.com/gin-contrib/cors v1.3.0/go.mod h1:artPvLlhkF7oG06nK8v3U8TNz6IeX+w1uzCSEId5/Vc=
 github.com/gin-contrib/sse v0.0.0-20190301062529-5545eab6dad3/go.mod h1:VJ0WA2NBN22VlZ2dKZQPAPnyWw5XTlK1KymzLKsr59s=
