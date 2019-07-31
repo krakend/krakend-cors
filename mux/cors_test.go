@@ -35,7 +35,7 @@ func TestNew(t *testing.T) {
 	handler.ServeHTTP(res, req)
 
 	assertHeaders(t, res.Header(), map[string]string{
-		"Vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+		"Vary":                         "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
 		"Access-Control-Allow-Origin":  "http://foobar.com",
 		"Access-Control-Allow-Methods": "GET",
 		"Access-Control-Allow-Headers": "Origin",
@@ -62,7 +62,7 @@ func TestAllowOriginEmpty(t *testing.T) {
 	}
 
 	assertHeaders(t, res.Header(), map[string]string{
-		"Vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+		"Vary":                         "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
 		"Access-Control-Allow-Origin":  "*",
 		"Access-Control-Allow-Methods": "GET",
 		"Access-Control-Allow-Headers": "Origin",

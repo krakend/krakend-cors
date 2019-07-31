@@ -3,8 +3,9 @@ package gin
 import (
 	krakendcors "github.com/devopsfaith/krakend-cors"
 	"github.com/devopsfaith/krakend/config"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/cors"
+	wrapper "github.com/rs/cors/wrapper/gin"
 )
 
 // New returns a gin.HandlerFunc with the CORS configuration provided in the ExtraConfig
@@ -18,26 +19,12 @@ func New(e config.ExtraConfig) gin.HandlerFunc {
 		return nil
 	}
 
-	var allowAllOrigins bool
-	if len(cfg.AllowOrigins) == 0 {
-		allowAllOrigins = true
-	} else {
-		for _, origin := range cfg.AllowOrigins {
-			if origin == "*" {
-				allowAllOrigins = true
-				cfg.AllowOrigins = nil
-				break
-			}
-		}
-	}
-
-	return cors.New(cors.Config{
-		AllowAllOrigins:  allowAllOrigins,
-		AllowOrigins:     cfg.AllowOrigins,
-		AllowMethods:     cfg.AllowMethods,
-		AllowHeaders:     cfg.AllowHeaders,
-		ExposeHeaders:    cfg.ExposeHeaders,
+	return wrapper.New(cors.Options{
+		AllowedOrigins:   cfg.AllowOrigins,
+		AllowedMethods:   cfg.AllowMethods,
+		AllowedHeaders:   cfg.AllowHeaders,
+		ExposedHeaders:   cfg.ExposeHeaders,
 		AllowCredentials: cfg.AllowCredentials,
-		MaxAge:           cfg.MaxAge,
+		MaxAge:           int(cfg.MaxAge.Seconds()),
 	})
 }
