@@ -39,7 +39,7 @@ At least one option should be defined.
   or leave the defaults (the defaults allows all origins):
   ```
   "extra_config": {
-    github_com/devopsfaith/krakend-metrics": {
+    github_com/devopsfaith/krakend-cors": {
       "allow_origins": []
     }
   }
