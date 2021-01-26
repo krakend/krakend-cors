@@ -1,8 +1,9 @@
 package cors
 
 import (
-	"github.com/devopsfaith/krakend/config"
 	"time"
+
+	"github.com/devopsfaith/krakend/config"
 )
 
 // Namespace is the key to look for extra configuration details
@@ -16,6 +17,7 @@ type Config struct {
 	ExposeHeaders    []string
 	AllowCredentials bool
 	MaxAge           time.Duration
+	Debug            bool
 }
 
 // ConfigGetter implements the config.ConfigGetter interface. It parses the extra config an allowed
@@ -42,6 +44,11 @@ func ConfigGetter(e config.ExtraConfig) interface{} {
 		if v, ok := allowCredentials.(bool); ok {
 			cfg.AllowCredentials = v
 		}
+	}
+
+	if debug, ok := tmp["debug"]; ok {
+		v, ok := debug.(bool)
+		cfg.Debug = ok && v
 	}
 
 	if maxAge, ok := tmp["max_age"]; ok {

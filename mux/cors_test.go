@@ -1,11 +1,14 @@
 package mux
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/devopsfaith/krakend/logging"
 )
 
 func TestInvalidCfg(t *testing.T) {
@@ -41,6 +44,45 @@ func TestNew(t *testing.T) {
 		"Access-Control-Allow-Headers": "Origin",
 		"Access-Control-Max-Age":       "7200",
 	})
+}
+
+func TestNewWithLogger(t *testing.T) {
+	buf := bytes.NewBuffer(nil)
+	logger, err := logging.NewLogger("DEBUG", buf, "")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	sampleCfg := map[string]interface{}{}
+	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+			"allow_origins": [ "http://foobar.com" ],
+			"allow_methods": [ "GET" ],
+			"max_age": "2h"
+			}
+		}`)
+	json.Unmarshal(serialized, &sampleCfg)
+	h := NewWithLogger(sampleCfg, logger)
+	res := httptest.NewRecorder()
+	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
+	req.Header.Add("Origin", "http://foobar.com")
+	handler := h.Handler(testHandler)
+	handler.ServeHTTP(res, req)
+	if res.Code != 200 {
+		t.Errorf("Invalid status code: %d should be 200", res.Code)
+	}
+
+	assertHeaders(t, res.Header(), map[string]string{
+		"Vary":                         "",
+		"Access-Control-Allow-Origin":  "",
+		"Access-Control-Allow-Methods": "",
+		"Access-Control-Allow-Headers": "",
+		"Access-Control-Max-Age":       "",
+	})
+
+	loggedMsg := buf.String()
+	if len(loggedMsg) != 0 {
+		t.Error("unexpected logged msg:", loggedMsg)
+	}
 }
 
 func TestAllowOriginEmpty(t *testing.T) {
