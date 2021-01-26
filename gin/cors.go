@@ -7,6 +7,7 @@ import (
 	krakendcors "github.com/devopsfaith/krakend-cors"
 	"github.com/devopsfaith/krakend-cors/mux"
 	"github.com/devopsfaith/krakend/config"
+	"github.com/devopsfaith/krakend/logging"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/cors"
 	wrapper "github.com/rs/cors/wrapper/gin"
@@ -40,8 +41,15 @@ type RunServer func(context.Context, config.ServiceConfig, http.Handler) error
 // actual router checks the URL, method and other details related to selecting the proper handler for the
 // incoming request
 func NewRunServer(next RunServer) RunServer {
+	return NewRunServerWithLogger(next, nil)
+}
+
+// NewRunServerWithLogger returns a RunServer wrapping the injected one with a CORS middleware, so it is called before the
+// actual router checks the URL, method and other details related to selecting the proper handler for the
+// incoming request
+func NewRunServerWithLogger(next RunServer, l logging.Logger) RunServer {
 	return func(ctx context.Context, cfg config.ServiceConfig, handler http.Handler) error {
-		corsMw := mux.New(cfg.ExtraConfig)
+		corsMw := mux.NewWithLogger(cfg.ExtraConfig, l)
 		if corsMw == nil {
 			return next(ctx, cfg, handler)
 		}
