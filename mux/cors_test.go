@@ -3,7 +3,6 @@ package mux
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -66,8 +65,6 @@ func TestNewWithLogger(t *testing.T) {
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
 	req.Header.Add("Origin", "http://foobar.com")
-	//req.Header.Add("Access-Control-Request-Method", "GET")
-	//req.Header.Add("Access-Control-Request-Headers", "origin")
 	handler := h.Handler(testHandler)
 	handler.ServeHTTP(res, req)
 	if res.Code != 200 {
@@ -82,7 +79,10 @@ func TestNewWithLogger(t *testing.T) {
 		"Access-Control-Max-Age":       "",
 	})
 
-	fmt.Println(buf.String())
+	loggedMsg := buf.String()
+	if len(loggedMsg) != 0 {
+		t.Error("unexpected logged msg:", loggedMsg)
+	}
 }
 
 func TestAllowOriginEmpty(t *testing.T) {
