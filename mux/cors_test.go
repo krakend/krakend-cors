@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/devopsfaith/krakend/logging"
+	"github.com/luraproject/lura/logging"
 )
 
 func TestInvalidCfg(t *testing.T) {

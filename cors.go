@@ -3,7 +3,7 @@ package cors
 import (
 	"time"
 
-	"github.com/devopsfaith/krakend/config"
+	"github.com/luraproject/lura/config"
 )
 
 // Namespace is the key to look for extra configuration details

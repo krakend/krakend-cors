@@ -5,9 +5,9 @@ import (
 	"log"
 
 	krakendcors "github.com/devopsfaith/krakend-cors"
-	"github.com/devopsfaith/krakend/config"
-	"github.com/devopsfaith/krakend/logging"
-	"github.com/devopsfaith/krakend/router/mux"
+	"github.com/luraproject/lura/config"
+	"github.com/luraproject/lura/logging"
+	"github.com/luraproject/lura/router/mux"
 	"github.com/rs/cors"
 )
 
