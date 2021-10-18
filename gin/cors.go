@@ -53,6 +53,7 @@ func NewRunServerWithLogger(next RunServer, l logging.Logger) RunServer {
 		if corsMw == nil {
 			return next(ctx, cfg, handler)
 		}
+		l.Debug("[SERVICE: Gin][CORS] Enabled CORS for all requests")
 		return next(ctx, cfg, corsMw.Handler(handler))
 	}
 }

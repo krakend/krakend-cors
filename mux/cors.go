@@ -43,7 +43,7 @@ func NewWithLogger(e config.ExtraConfig, l logging.Logger) mux.HandlerMiddleware
 		msg := make([]byte, 1024)
 		for {
 			r.Read(msg)
-			l.Debug(string(msg))
+			l.Debug("[CORS]", string(msg))
 		}
 	}()
 	return c
