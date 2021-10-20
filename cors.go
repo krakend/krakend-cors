@@ -3,7 +3,7 @@ package cors
 import (
 	"time"
 
-	"github.com/luraproject/lura/config"
+	"github.com/luraproject/lura/v2/config"
 )
 
 // Namespace is the key to look for extra configuration details
