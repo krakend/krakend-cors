@@ -48,6 +48,9 @@ func NewRunServer(next RunServer) RunServer {
 // actual router checks the URL, method and other details related to selecting the proper handler for the
 // incoming request
 func NewRunServerWithLogger(next RunServer, l logging.Logger) RunServer {
+	if l == nil {
+		l = logging.NoOp
+	}
 	return func(ctx context.Context, cfg config.ServiceConfig, handler http.Handler) error {
 		corsMw := mux.NewWithLogger(cfg.ExtraConfig, l)
 		if corsMw == nil {
