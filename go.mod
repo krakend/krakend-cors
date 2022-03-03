@@ -1,8 +1,8 @@
 module github.com/devopsfaith/krakend-cors/v2
 
 require (
-	github.com/gin-gonic/gin v1.7.4
-	github.com/luraproject/lura/v2 v2.0.0-dev
+	github.com/gin-gonic/gin v1.7.7
+	github.com/luraproject/lura/v2 v2.0.0
 	github.com/rs/cors v1.6.0
 )
 
