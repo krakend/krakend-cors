@@ -1,4 +1,4 @@
-module github.com/devopsfaith/krakend-cors/v2
+module github.com/krakendio/krakend-cors/v2
 
 require (
 	github.com/gin-gonic/gin v1.7.7
