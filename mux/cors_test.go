@@ -80,7 +80,7 @@ func TestNewWithLogger(t *testing.T) {
 	})
 
 	loggedMsg := buf.String()
-	if len(loggedMsg) != 0 {
+	if loggedMsg != "" {
 		t.Error("unexpected logged msg:", loggedMsg)
 	}
 }
