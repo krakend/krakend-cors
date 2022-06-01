@@ -51,7 +51,6 @@ func TestNew(t *testing.T) {
 		"Access-Control-Allow-Headers": "Origin",
 		"Access-Control-Max-Age":       "7200",
 	})
-
 }
 
 func TestAllowOriginWildcard(t *testing.T) {
