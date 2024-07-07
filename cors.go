@@ -59,7 +59,7 @@ func ConfigGetter(e config.ExtraConfig) interface{} {
 }
 
 func getList(data map[string]interface{}, name string) []string {
-	out := []string{}
+	var out []string
 	if vs, ok := data[name]; ok {
 		if v, ok := vs.([]interface{}); ok {
 			for _, s := range v {
