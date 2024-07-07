@@ -23,11 +23,17 @@ func TestNew(t *testing.T) {
 	sampleCfg := map[string]interface{}{}
 	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
 			"allow_origins": [ "http://foobar.com" ],
+            "allow_headers": [ "origin" ],
 			"allow_methods": [ "GET" ],
 			"max_age": "2h"
 			}
 		}`)
-	json.Unmarshal(serialized, &sampleCfg)
+	err := json.Unmarshal(serialized, &sampleCfg)
+	if err != nil {
+		t.Errorf("cannot unmarshal config: %s", err.Error())
+		return
+
+	}
 	h := New(sampleCfg)
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
@@ -41,7 +47,7 @@ func TestNew(t *testing.T) {
 		"Vary":                         "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
 		"Access-Control-Allow-Origin":  "http://foobar.com",
 		"Access-Control-Allow-Methods": "GET",
-		"Access-Control-Allow-Headers": "Origin",
+		"Access-Control-Allow-Headers": "origin",
 		"Access-Control-Max-Age":       "7200",
 	})
 }
@@ -56,6 +62,7 @@ func TestNewWithLogger(t *testing.T) {
 	sampleCfg := map[string]interface{}{}
 	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
 			"allow_origins": [ "http://foobar.com" ],
+            "allow_headers": [ "origin" ],
 			"allow_methods": [ "GET" ],
 			"max_age": "2h"
 			}
@@ -65,18 +72,20 @@ func TestNewWithLogger(t *testing.T) {
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
 	req.Header.Add("Origin", "http://foobar.com")
+	req.Header.Add("Access-Control-Request-Method", "GET")
+	req.Header.Add("Access-Control-Request-Headers", "origin")
 	handler := h.Handler(testHandler)
 	handler.ServeHTTP(res, req)
-	if res.Code != 200 {
+	if res.Code != 200 && res.Code != 204 {
 		t.Errorf("Invalid status code: %d should be 200", res.Code)
 	}
 
 	assertHeaders(t, res.Header(), map[string]string{
-		"Vary":                         "",
-		"Access-Control-Allow-Origin":  "",
-		"Access-Control-Allow-Methods": "",
-		"Access-Control-Allow-Headers": "",
-		"Access-Control-Max-Age":       "",
+		"Vary":                         "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+		"Access-Control-Allow-Origin":  "http://foobar.com",
+		"Access-Control-Allow-Methods": "GET",
+		"Access-Control-Allow-Headers": "origin",
+		"Access-Control-Max-Age":       "7200",
 	})
 
 	loggedMsg := buf.String()
@@ -85,29 +94,37 @@ func TestNewWithLogger(t *testing.T) {
 	}
 }
 
-func TestAllowOriginEmpty(t *testing.T) {
+func TestAllowWildcard(t *testing.T) {
 	sampleCfg := map[string]interface{}{}
+	// WARNING: Here, empty configurations is not defaultion to allow
+	// all origins, and all headers, so the config should be changed to this
+	// config to allow everything
 	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+                "allow_origins": ["*"],
+                "allow_headers": ["*"]
 			}
 		}`)
-	json.Unmarshal(serialized, &sampleCfg)
+	err := json.Unmarshal(serialized, &sampleCfg)
+	if err != nil {
+		t.Errorf("cannot deserialize config: %s\n", err.Error())
+	}
 	h := New(sampleCfg)
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
+	req.Header.Add("Origin", "http://foobar.com")
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
-	req.Header.Add("Origin", "http://foobar.com")
 	handler := h.Handler(testHandler)
 	handler.ServeHTTP(res, req)
-	if res.Code != 200 {
-		t.Errorf("Invalid status code: %d should be 200", res.Code)
+	if res.Code != 200 && res.Code != 204 {
+		t.Errorf("Invalid status code: %d should be 200 or 204", res.Code)
 	}
 
 	assertHeaders(t, res.Header(), map[string]string{
 		"Vary":                         "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
 		"Access-Control-Allow-Origin":  "*",
 		"Access-Control-Allow-Methods": "GET",
-		"Access-Control-Allow-Headers": "Origin",
+		"Access-Control-Allow-Headers": "origin",
 	})
 }
 

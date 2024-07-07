@@ -2,6 +2,7 @@ package gin
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -20,43 +21,57 @@ func TestInvalidCfg(t *testing.T) {
 
 func TestNew(t *testing.T) {
 	sampleCfg := map[string]interface{}{}
-	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
-			"allow_origins": [ "http://foobar.com" ],
-			"allow_methods": [ "GET" ],
+	serialized := []byte(`{ 
+        "github_com/devopsfaith/krakend-cors": {
+            "allow_origins": ["http://foobar.com", "http://example.com"],
+            "allow_headers": ["origin"],
+			"allow_methods": ["GET"],
 			"max_age": "2h"
 			}
 		}`)
-	json.Unmarshal(serialized, &sampleCfg)
+	err := json.Unmarshal(serialized, &sampleCfg)
+	if err != nil {
+		t.Errorf("cannot unmarshal sampleCfg: %s", err.Error())
+		return
+	}
 	e := gin.Default()
 	corsMw := New(sampleCfg)
 	if corsMw == nil {
 		t.Error("The cors middleware should not be nil.\n")
+		return
 	}
 	e.Use(corsMw)
 	e.GET("/foo", func(c *gin.Context) { c.String(200, "Yeah") })
+
 	res := httptest.NewRecorder()
+
 	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
 	req.Header.Add("Origin", "http://foobar.com")
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
 	e.ServeHTTP(res, req)
-	if res.Code != 200 {
-		t.Errorf("Invalid status code: %d should be 200", res.Code)
+	fmt.Printf("METHOD -> %s\n", req.Method)
+	if res.Code != 200 && res.Code != 204 {
+		t.Errorf("Invalid status code: %d should be 200 or 204", res.Code)
+		return
 	}
 
 	assertHeaders(t, res.Header(), map[string]string{
 		"Vary":                         "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
 		"Access-Control-Allow-Origin":  "http://foobar.com",
 		"Access-Control-Allow-Methods": "GET",
-		"Access-Control-Allow-Headers": "Origin",
+		"Access-Control-Allow-Headers": "origin",
 		"Access-Control-Max-Age":       "7200",
 	})
 }
 
 func TestAllowOriginWildcard(t *testing.T) {
 	sampleCfg := map[string]interface{}{}
+	// WARNING: even if we allow all origins, we still have to specify
+	// the allow_headers config
 	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
-			"allow_origins": [ "*" ]
+            "allow_origins": [ "*" ],
+            "allow_headers": ["origin"]
 			}
 		}`)
 	json.Unmarshal(serialized, &sampleCfg)
@@ -73,7 +88,7 @@ func TestAllowOriginWildcard(t *testing.T) {
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
 	e.ServeHTTP(res, req)
-	if res.Code != 200 {
+	if res.Code != 200 && res.Code != 204 {
 		t.Errorf("Invalid status code: %d should be 200", res.Code)
 	}
 
@@ -81,11 +96,15 @@ func TestAllowOriginWildcard(t *testing.T) {
 		"Vary":                         "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
 		"Access-Control-Allow-Origin":  "*",
 		"Access-Control-Allow-Methods": "GET",
-		"Access-Control-Allow-Headers": "Origin",
+		"Access-Control-Allow-Headers": "origin",
 	})
 }
 
 func TestAllowOriginEmpty(t *testing.T) {
+	// WARNING: with an empty config, the library now falls back
+	// to "secure" defaults, not allowing the request
+	// (in the mux/cors_test.go, we did the reverse, we specified
+	// the test to allow everything).
 	sampleCfg := map[string]interface{}{}
 	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
 			}
@@ -104,15 +123,15 @@ func TestAllowOriginEmpty(t *testing.T) {
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
 	e.ServeHTTP(res, req)
-	if res.Code != 200 {
+	if res.Code != 200 && res.Code != 204 {
 		t.Errorf("Invalid status code: %d should be 200", res.Code)
 	}
 
 	assertHeaders(t, res.Header(), map[string]string{
 		"Vary":                         "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
-		"Access-Control-Allow-Origin":  "*",
-		"Access-Control-Allow-Methods": "GET",
-		"Access-Control-Allow-Headers": "Origin",
+		"Access-Control-Allow-Origin":  "",
+		"Access-Control-Allow-Methods": "",
+		"Access-Control-Allow-Headers": "",
 	})
 }
 

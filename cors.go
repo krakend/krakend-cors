@@ -35,7 +35,6 @@ func ConfigGetter(e config.ExtraConfig) interface{} {
 
 	cfg := Config{}
 	cfg.AllowOrigins = getList(tmp, "allow_origins")
-
 	cfg.AllowMethods = getList(tmp, "allow_methods")
 	cfg.AllowHeaders = getList(tmp, "allow_headers")
 	cfg.ExposeHeaders = getList(tmp, "expose_headers")
