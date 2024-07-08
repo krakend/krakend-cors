@@ -26,6 +26,14 @@ func NewWithLogger(e config.ExtraConfig, l logging.Logger) mux.HandlerMiddleware
 	if !ok {
 		return nil
 	}
+
+	if len(cfg.AllowOrigins) == 0 {
+		cfg.AllowOrigins = []string{"*"}
+	}
+	if len(cfg.AllowHeaders) == 0 {
+		cfg.AllowHeaders = []string{"*"}
+	}
+
 	c := cors.New(cors.Options{
 		AllowedOrigins:   cfg.AllowOrigins,
 		AllowedMethods:   cfg.AllowMethods,

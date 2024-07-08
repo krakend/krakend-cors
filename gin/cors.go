@@ -24,6 +24,13 @@ func New(e config.ExtraConfig) gin.HandlerFunc {
 		return nil
 	}
 
+	if len(cfg.AllowOrigins) == 0 {
+		cfg.AllowOrigins = []string{"*"}
+	}
+	if len(cfg.AllowHeaders) == 0 {
+		cfg.AllowHeaders = []string{"*"}
+	}
+
 	return wrapper.New(cors.Options{
 		AllowedOrigins:   cfg.AllowOrigins,
 		AllowedMethods:   cfg.AllowMethods,
