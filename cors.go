@@ -11,13 +11,16 @@ const Namespace = "github_com/devopsfaith/krakend-cors"
 
 // Config holds the configuration of CORS
 type Config struct {
-	AllowOrigins     []string
-	AllowMethods     []string
-	AllowHeaders     []string
-	ExposeHeaders    []string
-	AllowCredentials bool
-	MaxAge           time.Duration
-	Debug            bool
+	AllowOrigins         []string
+	AllowMethods         []string
+	AllowHeaders         []string
+	ExposeHeaders        []string
+	AllowCredentials     bool
+	AllowPrivateNetwork  bool
+	OptionsPassthrough   bool
+	OptionsSuccessStatus int
+	MaxAge               time.Duration
+	Debug                bool
 }
 
 // ConfigGetter implements the config.ConfigGetter interface. It parses the extra config an allowed
@@ -48,6 +51,22 @@ func ConfigGetter(e config.ExtraConfig) interface{} {
 	if debug, ok := tmp["debug"]; ok {
 		v, ok := debug.(bool)
 		cfg.Debug = ok && v
+	}
+
+	if allowPrivateNetwork, ok := tmp["allow_private_network"]; ok {
+		v, ok := allowPrivateNetwork.(bool)
+		cfg.AllowPrivateNetwork = ok && v
+	}
+
+	if optionsPassthrough, ok := tmp["options_passthrough"]; ok {
+		v, ok := optionsPassthrough.(bool)
+		cfg.OptionsPassthrough = ok && v
+	}
+
+	if optionsSuccessStatus, ok := tmp["options_success_status"]; ok {
+		if v, ok := optionsSuccessStatus.(float64); ok {
+			cfg.OptionsSuccessStatus = int(v)
+		}
 	}
 
 	if maxAge, ok := tmp["max_age"]; ok {
