@@ -27,7 +27,8 @@ func TestNew(t *testing.T) {
 			}
 		}`)
 	json.Unmarshal(serialized, &sampleCfg)
-	e := gin.Default()
+	gin.SetMode(gin.TestMode)
+	e := gin.New()
 	corsMw := New(sampleCfg)
 	if corsMw == nil {
 		t.Error("The cors middleware should not be nil.\n")
@@ -60,7 +61,8 @@ func TestAllowOriginWildcard(t *testing.T) {
 			}
 		}`)
 	json.Unmarshal(serialized, &sampleCfg)
-	e := gin.Default()
+	gin.SetMode(gin.TestMode)
+	e := gin.New()
 	corsMw := New(sampleCfg)
 	if corsMw == nil {
 		t.Error("The cors middleware should not be nil.\n")
@@ -91,7 +93,8 @@ func TestAllowOriginEmpty(t *testing.T) {
 			}
 		}`)
 	json.Unmarshal(serialized, &sampleCfg)
-	e := gin.Default()
+	gin.SetMode(gin.TestMode)
+	e := gin.New()
 	corsMw := New(sampleCfg)
 	if corsMw == nil {
 		t.Error("The cors middleware should not be nil.\n")
