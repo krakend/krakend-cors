@@ -41,8 +41,8 @@ func TestNew(t *testing.T) {
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
 	e.ServeHTTP(res, req)
-	if res.Code != 200 && res.Code != 204 {
-		t.Errorf("Invalid status code: %d should be 200 or 204", res.Code)
+	if res.Code != 200 {
+		t.Errorf("Invalid status code: %d should be 200", res.Code)
 	}
 
 	assertHeaders(t, res.Header(), map[string]string{
@@ -75,8 +75,8 @@ func TestAllowOriginWildcard(t *testing.T) {
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
 	e.ServeHTTP(res, req)
-	if res.Code != 200 && res.Code != 204 {
-		t.Errorf("Invalid status code: %d should be 200 or 204", res.Code)
+	if res.Code != 200 {
+		t.Errorf("Invalid status code: %d should be 200", res.Code)
 	}
 
 	assertHeaders(t, res.Header(), map[string]string{
@@ -107,8 +107,8 @@ func TestAllowOriginEmpty(t *testing.T) {
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
 	e.ServeHTTP(res, req)
-	if res.Code != 200 && res.Code != 204 {
-		t.Errorf("Invalid status code: %d should be 200 or 204", res.Code)
+	if res.Code != 200 {
+		t.Errorf("Invalid status code: %d should be 200", res.Code)
 	}
 
 	assertHeaders(t, res.Header(), map[string]string{
