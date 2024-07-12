@@ -27,7 +27,8 @@ func TestNew(t *testing.T) {
 			}
 		}`)
 	json.Unmarshal(serialized, &sampleCfg)
-	e := gin.Default()
+	gin.SetMode(gin.TestMode)
+	e := gin.New()
 	corsMw := New(sampleCfg)
 	if corsMw == nil {
 		t.Error("The cors middleware should not be nil.\n")
@@ -48,7 +49,7 @@ func TestNew(t *testing.T) {
 		"Vary":                         "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
 		"Access-Control-Allow-Origin":  "http://foobar.com",
 		"Access-Control-Allow-Methods": "GET",
-		"Access-Control-Allow-Headers": "Origin",
+		"Access-Control-Allow-Headers": "origin",
 		"Access-Control-Max-Age":       "7200",
 	})
 }
@@ -60,7 +61,8 @@ func TestAllowOriginWildcard(t *testing.T) {
 			}
 		}`)
 	json.Unmarshal(serialized, &sampleCfg)
-	e := gin.Default()
+	gin.SetMode(gin.TestMode)
+	e := gin.New()
 	corsMw := New(sampleCfg)
 	if corsMw == nil {
 		t.Error("The cors middleware should not be nil.\n")
@@ -81,7 +83,7 @@ func TestAllowOriginWildcard(t *testing.T) {
 		"Vary":                         "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
 		"Access-Control-Allow-Origin":  "*",
 		"Access-Control-Allow-Methods": "GET",
-		"Access-Control-Allow-Headers": "Origin",
+		"Access-Control-Allow-Headers": "origin",
 	})
 }
 
@@ -91,7 +93,8 @@ func TestAllowOriginEmpty(t *testing.T) {
 			}
 		}`)
 	json.Unmarshal(serialized, &sampleCfg)
-	e := gin.Default()
+	gin.SetMode(gin.TestMode)
+	e := gin.New()
 	corsMw := New(sampleCfg)
 	if corsMw == nil {
 		t.Error("The cors middleware should not be nil.\n")
@@ -112,7 +115,7 @@ func TestAllowOriginEmpty(t *testing.T) {
 		"Vary":                         "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
 		"Access-Control-Allow-Origin":  "*",
 		"Access-Control-Allow-Methods": "GET",
-		"Access-Control-Allow-Headers": "Origin",
+		"Access-Control-Allow-Headers": "origin",
 	})
 }
 

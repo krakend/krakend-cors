@@ -24,13 +24,29 @@ func New(e config.ExtraConfig) gin.HandlerFunc {
 		return nil
 	}
 
+	if len(cfg.AllowOrigins) == 0 {
+		cfg.AllowOrigins = []string{"*"}
+	}
+	if len(cfg.AllowHeaders) == 0 {
+		cfg.AllowHeaders = []string{"*"}
+	}
+	// Maintain the old default value to not change behaviour
+	// the rs/cors new default is to return a 204
+	if cfg.OptionsSuccessStatus == 0 {
+		cfg.OptionsSuccessStatus = 200
+	}
+
 	return wrapper.New(cors.Options{
-		AllowedOrigins:   cfg.AllowOrigins,
-		AllowedMethods:   cfg.AllowMethods,
-		AllowedHeaders:   cfg.AllowHeaders,
-		ExposedHeaders:   cfg.ExposeHeaders,
-		AllowCredentials: cfg.AllowCredentials,
-		MaxAge:           int(cfg.MaxAge.Seconds()),
+		AllowedOrigins:       cfg.AllowOrigins,
+		AllowedMethods:       cfg.AllowMethods,
+		AllowedHeaders:       cfg.AllowHeaders,
+		ExposedHeaders:       cfg.ExposeHeaders,
+		AllowCredentials:     cfg.AllowCredentials,
+		AllowPrivateNetwork:  cfg.AllowPrivateNetwork,
+		OptionsPassthrough:   cfg.OptionsPassthrough,
+		OptionsSuccessStatus: cfg.OptionsSuccessStatus,
+		MaxAge:               int(cfg.MaxAge.Seconds()),
+		Debug:                cfg.Debug,
 	})
 }
 

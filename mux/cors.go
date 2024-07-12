@@ -26,13 +26,30 @@ func NewWithLogger(e config.ExtraConfig, l logging.Logger) mux.HandlerMiddleware
 	if !ok {
 		return nil
 	}
+
+	if len(cfg.AllowOrigins) == 0 {
+		cfg.AllowOrigins = []string{"*"}
+	}
+	if len(cfg.AllowHeaders) == 0 {
+		cfg.AllowHeaders = []string{"*"}
+	}
+	// Maintain the old default value to not change behaviour
+	// the rs/cors new default is to return a 204
+	if cfg.OptionsSuccessStatus == 0 {
+		cfg.OptionsSuccessStatus = 200
+	}
+
 	c := cors.New(cors.Options{
-		AllowedOrigins:   cfg.AllowOrigins,
-		AllowedMethods:   cfg.AllowMethods,
-		AllowedHeaders:   cfg.AllowHeaders,
-		ExposedHeaders:   cfg.ExposeHeaders,
-		AllowCredentials: cfg.AllowCredentials,
-		MaxAge:           int(cfg.MaxAge.Seconds()),
+		AllowedOrigins:       cfg.AllowOrigins,
+		AllowedMethods:       cfg.AllowMethods,
+		AllowedHeaders:       cfg.AllowHeaders,
+		ExposedHeaders:       cfg.ExposeHeaders,
+		AllowCredentials:     cfg.AllowCredentials,
+		AllowPrivateNetwork:  cfg.AllowPrivateNetwork,
+		OptionsPassthrough:   cfg.OptionsPassthrough,
+		OptionsSuccessStatus: cfg.OptionsSuccessStatus,
+		Debug:                cfg.Debug,
+		MaxAge:               int(cfg.MaxAge.Seconds()),
 	})
 	if l == nil || !cfg.Debug {
 		return c
