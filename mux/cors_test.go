@@ -28,7 +28,10 @@ func TestNew(t *testing.T) {
 			"max_age": "2h"
 			}
 		}`)
-	json.Unmarshal(serialized, &sampleCfg)
+	if err := json.Unmarshal(serialized, &sampleCfg); err != nil {
+		t.Error(err)
+		return
+	}
 	h := New(sampleCfg)
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
@@ -61,14 +64,17 @@ func TestNewWithLogger(t *testing.T) {
 			"max_age": "2h"
 			}
 		}`)
-	json.Unmarshal(serialized, &sampleCfg)
+	if err := json.Unmarshal(serialized, &sampleCfg); err != nil {
+		t.Error(err)
+		return
+	}
 	h := NewWithLogger(sampleCfg, logger)
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
 	req.Header.Add("Origin", "http://foobar.com")
 	handler := h.Handler(testHandler)
 	handler.ServeHTTP(res, req)
-	if res.Code != 200 {
+	if res.Code != http.StatusOK {
 		t.Errorf("Invalid status code: %d should be 200", res.Code)
 	}
 
@@ -91,7 +97,10 @@ func TestAllowOriginEmpty(t *testing.T) {
 	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
 			}
 		}`)
-	json.Unmarshal(serialized, &sampleCfg)
+	if err := json.Unmarshal(serialized, &sampleCfg); err != nil {
+		t.Error(err)
+		return
+	}
 	h := New(sampleCfg)
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
@@ -100,8 +109,8 @@ func TestAllowOriginEmpty(t *testing.T) {
 	req.Header.Add("Origin", "http://foobar.com")
 	handler := h.Handler(testHandler)
 	handler.ServeHTTP(res, req)
-	if res.Code != 200 {
-		t.Errorf("Invalid status code: %d should be 200", res.Code)
+	if res.Code != http.StatusNoContent {
+		t.Errorf("Invalid status code: %d should be 204", res.Code)
 	}
 
 	assertHeaders(t, res.Header(), map[string]string{
@@ -115,10 +124,13 @@ func TestAllowOriginEmpty(t *testing.T) {
 func TestOptionsSuccess(t *testing.T) {
 	sampleCfg := map[string]interface{}{}
 	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
-				"options_success_status": 205
+				"options_success_status": 200
 			}
 		}`)
-	json.Unmarshal(serialized, &sampleCfg)
+	if err := json.Unmarshal(serialized, &sampleCfg); err != nil {
+		t.Error(err)
+		return
+	}
 	h := New(sampleCfg)
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
@@ -127,8 +139,8 @@ func TestOptionsSuccess(t *testing.T) {
 	req.Header.Add("Origin", "http://foobar.com")
 	handler := h.Handler(testHandler)
 	handler.ServeHTTP(res, req)
-	if res.Code != 205 {
-		t.Errorf("Invalid status code: %d should be 205", res.Code)
+	if res.Code != http.StatusOK {
+		t.Errorf("Invalid status code: %d should be 200", res.Code)
 	}
 
 	assertHeaders(t, res.Header(), map[string]string{
@@ -145,7 +157,10 @@ func TestAllowPrivateNetwork(t *testing.T) {
 				"allow_private_network": true
 			}
 		}`)
-	json.Unmarshal(serialized, &sampleCfg)
+	if err := json.Unmarshal(serialized, &sampleCfg); err != nil {
+		t.Error(err)
+		return
+	}
 	h := New(sampleCfg)
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
@@ -154,8 +169,8 @@ func TestAllowPrivateNetwork(t *testing.T) {
 	req.Header.Add("Origin", "http://foobar.com")
 	handler := h.Handler(testHandler)
 	handler.ServeHTTP(res, req)
-	if res.Code != 200 {
-		t.Errorf("Invalid status code: %d should be 200", res.Code)
+	if res.Code != http.StatusNoContent {
+		t.Errorf("Invalid status code: %d should be 204", res.Code)
 	}
 
 	assertHeaders(t, res.Header(), map[string]string{
@@ -172,7 +187,12 @@ func TestOptionPasstrough(t *testing.T) {
 				"options_passthrough": true
 			}
 		}`)
-	json.Unmarshal(serialized, &sampleCfg)
+
+	if err := json.Unmarshal(serialized, &sampleCfg); err != nil {
+		t.Error(err)
+		return
+	}
+
 	h := New(sampleCfg)
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
@@ -180,7 +200,7 @@ func TestOptionPasstrough(t *testing.T) {
 	req.Header.Add("Origin", "http://foobar.com")
 	handler := h.Handler(testHandler)
 	handler.ServeHTTP(res, req)
-	if res.Code != 200 {
+	if res.Code != http.StatusOK {
 		t.Errorf("Invalid status code: %d should be 200", res.Code)
 	}
 

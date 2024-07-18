@@ -33,11 +33,6 @@ func NewWithLogger(e config.ExtraConfig, l logging.Logger) mux.HandlerMiddleware
 	if len(cfg.AllowHeaders) == 0 {
 		cfg.AllowHeaders = []string{"*"}
 	}
-	// Maintain the old default value to not change behaviour
-	// the rs/cors new default is to return a 204
-	if cfg.OptionsSuccessStatus == 0 {
-		cfg.OptionsSuccessStatus = 200
-	}
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:       cfg.AllowOrigins,
