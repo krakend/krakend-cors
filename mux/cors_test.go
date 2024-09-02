@@ -231,6 +231,6 @@ func assertHeaders(t *testing.T, resHeaders http.Header, expHeaders map[string]s
 	}
 }
 
-var testHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+var testHandler = http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 	w.Write([]byte("bar"))
 })
