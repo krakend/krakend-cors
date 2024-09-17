@@ -34,7 +34,7 @@ func TestNew(t *testing.T) {
 	}
 	h := New(sampleCfg)
 	res := httptest.NewRecorder()
-	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
+	req, _ := http.NewRequest("OPTIONS", "https://example.com/foo", http.NoBody)
 	req.Header.Add("Origin", "http://foobar.com")
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
@@ -70,7 +70,7 @@ func TestNewWithLogger(t *testing.T) {
 	}
 	h := NewWithLogger(sampleCfg, logger)
 	res := httptest.NewRecorder()
-	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
+	req, _ := http.NewRequest("OPTIONS", "https://example.com/foo", http.NoBody)
 	req.Header.Add("Origin", "http://foobar.com")
 	handler := h.Handler(testHandler)
 	handler.ServeHTTP(res, req)
@@ -103,7 +103,7 @@ func TestAllowOriginEmpty(t *testing.T) {
 	}
 	h := New(sampleCfg)
 	res := httptest.NewRecorder()
-	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
+	req, _ := http.NewRequest("OPTIONS", "https://example.com/foo", http.NoBody)
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
 	req.Header.Add("Origin", "http://foobar.com")
@@ -133,7 +133,7 @@ func TestOptionsSuccess(t *testing.T) {
 	}
 	h := New(sampleCfg)
 	res := httptest.NewRecorder()
-	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
+	req, _ := http.NewRequest("OPTIONS", "https://example.com/foo", http.NoBody)
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
 	req.Header.Add("Origin", "http://foobar.com")
@@ -163,7 +163,7 @@ func TestAllowPrivateNetwork(t *testing.T) {
 	}
 	h := New(sampleCfg)
 	res := httptest.NewRecorder()
-	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
+	req, _ := http.NewRequest("OPTIONS", "https://example.com/foo", http.NoBody)
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Private-Network", "true")
 	req.Header.Add("Origin", "http://foobar.com")
@@ -195,7 +195,7 @@ func TestOptionPasstrough(t *testing.T) {
 
 	h := New(sampleCfg)
 	res := httptest.NewRecorder()
-	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil)
+	req, _ := http.NewRequest("OPTIONS", "https://example.com/foo", http.NoBody)
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Origin", "http://foobar.com")
 	handler := h.Handler(testHandler)
@@ -231,6 +231,6 @@ func assertHeaders(t *testing.T, resHeaders http.Header, expHeaders map[string]s
 	}
 }
 
-var testHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+var testHandler = http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 	w.Write([]byte("bar"))
 })
