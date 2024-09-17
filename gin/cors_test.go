@@ -36,7 +36,7 @@ func TestNew(t *testing.T) {
 	e.Use(corsMw)
 	e.GET("/foo", func(c *gin.Context) { c.String(200, "Yeah") })
 	res := httptest.NewRecorder()
-	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil) // skipcq: GO-S1028
+	req, _ := http.NewRequest("OPTIONS", "https://example.com/foo", http.NoBody)
 	req.Header.Add("Origin", "http://foobar.com")
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
@@ -70,7 +70,7 @@ func TestAllowOriginWildcard(t *testing.T) {
 	e.Use(corsMw)
 	e.GET("/wildcard", func(c *gin.Context) { c.String(200, "Yeah") })
 	res := httptest.NewRecorder()
-	req, _ := http.NewRequest("OPTIONS", "http://example.com/wildcard", nil) // skipcq: GO-S1028
+	req, _ := http.NewRequest("OPTIONS", "https://example.com/wildcard", http.NoBody)
 	req.Header.Add("Origin", "http://foobar.com")
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
@@ -102,7 +102,7 @@ func TestAllowOriginEmpty(t *testing.T) {
 	e.Use(corsMw)
 	e.GET("/foo", func(c *gin.Context) { c.String(200, "Yeah") })
 	res := httptest.NewRecorder()
-	req, _ := http.NewRequest("OPTIONS", "http://example.com/foo", nil) // skipcq: GO-S1028
+	req, _ := http.NewRequest("OPTIONS", "https://example.com/foo", http.NoBody)
 	req.Header.Add("Origin", "http://foobar.com")
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
