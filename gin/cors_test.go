@@ -234,7 +234,6 @@ func ExampleNewRunServerWithLogger() {
 	// DEBUG: [CORS] Preflight response headers: map[Access-Control-Allow-Headers:[Origin] Access-Control-Allow-Methods:[GET] Access-Control-Allow-Origin:[http://foobar.com] Access-Control-Max-Age:[7200] Vary:[Origin Access-Control-Request-Method Access-Control-Request-Headers]]
 	// DEBUG: [CORS] Handler: Actual request
 	// DEBUG: [CORS] Actual response added headers: map[Access-Control-Allow-Origin:[http://foobar.com] Vary:[Origin]]
-
 }
 
 var allHeaders = []string{
