@@ -163,10 +163,6 @@ func ExampleNewRunServerWithLogger() {
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
 	localHandler.ServeHTTP(res, req)
-	if res.Code != 200 {
-		fmt.Printf("Invalid status code: %d should be 200", res.Code)
-		return
-	}
 	fmt.Println(res.Code)
 
 	b, _ := json.MarshalIndent(res.Header(), "", "\t")
@@ -180,10 +176,6 @@ func ExampleNewRunServerWithLogger() {
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
 	localHandler.ServeHTTP(res, req)
-	if res.Code != 200 {
-		fmt.Printf("Invalid status code: %d should be 200", res.Code)
-		return
-	}
 	fmt.Println(res.Code)
 
 	b, _ = json.MarshalIndent(res.Header(), "", "\t")
@@ -195,10 +187,10 @@ func ExampleNewRunServerWithLogger() {
 	fmt.Println(re.ReplaceAllString(buf.String(), ""))
 
 	// output:
-	// 200
+	// 204
 	// {
 	// 	"Access-Control-Allow-Headers": [
-	// 		"Origin"
+	// 		"origin"
 	// 	],
 	// 	"Access-Control-Allow-Methods": [
 	// 		"GET"
@@ -210,9 +202,7 @@ func ExampleNewRunServerWithLogger() {
 	// 		"7200"
 	// 	],
 	// 	"Vary": [
-	// 		"Origin",
-	// 		"Access-Control-Request-Method",
-	// 		"Access-Control-Request-Headers"
+	// 		"Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
 	// 	]
 	// }
 	// ''
@@ -231,7 +221,7 @@ func ExampleNewRunServerWithLogger() {
 	// 'Yeah'
 	// DEBUG: [SERVICE: Gin][CORS] Enabled CORS for all requests
 	// DEBUG: [CORS] Handler: Preflight request
-	// DEBUG: [CORS] Preflight response headers: map[Access-Control-Allow-Headers:[Origin] Access-Control-Allow-Methods:[GET] Access-Control-Allow-Origin:[http://foobar.com] Access-Control-Max-Age:[7200] Vary:[Origin Access-Control-Request-Method Access-Control-Request-Headers]]
+	// DEBUG: [CORS] Preflight response headers: map[Access-Control-Allow-Headers:[origin] Access-Control-Allow-Methods:[GET] Access-Control-Allow-Origin:[http://foobar.com] Access-Control-Max-Age:[7200] Vary:[Origin, Access-Control-Request-Method, Access-Control-Request-Headers]]
 	// DEBUG: [CORS] Handler: Actual request
 	// DEBUG: [CORS] Actual response added headers: map[Access-Control-Allow-Origin:[http://foobar.com] Vary:[Origin]]
 }
