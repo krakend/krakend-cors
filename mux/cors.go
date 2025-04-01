@@ -1,6 +1,7 @@
 package mux
 
 import (
+	"bufio"
 	"io"
 	"log"
 
@@ -49,14 +50,19 @@ func NewWithLogger(e config.ExtraConfig, l logging.Logger) mux.HandlerMiddleware
 	if l == nil || !cfg.Debug {
 		return c
 	}
+
 	r, w := io.Pipe()
 	c.Log = log.New(w, "", log.LstdFlags)
-	go func() {
-		msg := make([]byte, 1024)
-		for {
-			r.Read(msg)
-			l.Debug("[CORS]", string(msg))
-		}
-	}()
+	go writeLog(r, l)
+
 	return c
+}
+
+func writeLog(r *io.PipeReader, l logging.Logger) {
+	scanner := bufio.NewScanner(r)
+	scanner.Split(bufio.ScanLines)
+
+	for scanner.Scan() {
+		l.Debug("[CORS]", scanner.Text())
+	}
 }
