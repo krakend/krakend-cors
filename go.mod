@@ -5,7 +5,7 @@ go 1.23.6
 require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/luraproject/lura/v2 v2.9.0
-	github.com/rs/cors v1.11.0
+	github.com/rs/cors v1.11.1
 	github.com/rs/cors/wrapper/gin v0.0.0-20240830163046-1084d89a1692
 )
 
