@@ -5,7 +5,7 @@ import (
 	"io"
 	"log"
 
-	krakendcors "github.com/krakendio/krakend-cors/v2"
+	krakendcors "github.com/krakend/krakend-cors/v2"
 	"github.com/luraproject/lura/v2/config"
 	"github.com/luraproject/lura/v2/logging"
 	"github.com/luraproject/lura/v2/router/mux"

@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	krakendcors "github.com/krakendio/krakend-cors/v2"
-	"github.com/krakendio/krakend-cors/v2/mux"
+	krakendcors "github.com/krakend/krakend-cors/v2"
+	"github.com/krakend/krakend-cors/v2/mux"
 	"github.com/luraproject/lura/v2/config"
 	"github.com/luraproject/lura/v2/logging"
 	"github.com/rs/cors"
