@@ -160,7 +160,7 @@ func ExampleNewRunServerWithLogger() {
 	}
 
 	res := httptest.NewRecorder()
-	req, _ := http.NewRequest("OPTIONS", "http://example.com/", http.NoBody)
+	req, _ := http.NewRequest("OPTIONS", "http://example.com/", http.NoBody) // skipcq GO-S1028
 	req.Header.Add("Origin", "http://foobar.com")
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
@@ -173,7 +173,7 @@ func ExampleNewRunServerWithLogger() {
 	fmt.Println("'" + res.Body.String() + "'")
 
 	res = httptest.NewRecorder()
-	req, _ = http.NewRequest("GET", "http://example.com/", http.NoBody)
+	req, _ = http.NewRequest("GET", "http://example.com/", http.NoBody) // skipcq GO-S1028
 	req.Header.Add("Origin", "http://foobar.com")
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
