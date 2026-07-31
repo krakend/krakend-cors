@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/luraproject/lura/v2/logging"
+	"github.com/luraproject/lura/v3/logging"
 )
 
 func TestInvalidCfg(t *testing.T) {
@@ -21,7 +21,7 @@ func TestInvalidCfg(t *testing.T) {
 
 func TestNew(t *testing.T) {
 	sampleCfg := map[string]interface{}{}
-	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+	serialized := []byte(`{ "security/cors": {
 			"allow_origins": [ "http://foobar.com" ],
 			"allow_headers": [ "Origin" ],
 			"allow_methods": [ "GET" ],
@@ -58,7 +58,7 @@ func TestNewWithLogger(t *testing.T) {
 		return
 	}
 	sampleCfg := map[string]interface{}{}
-	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+	serialized := []byte(`{ "security/cors": {
 			"allow_origins": [ "http://foobar.com" ],
 			"allow_methods": [ "GET" ],
 			"max_age": "2h"
@@ -94,7 +94,7 @@ func TestNewWithLogger(t *testing.T) {
 
 func TestAllowOriginEmpty(t *testing.T) {
 	sampleCfg := map[string]interface{}{}
-	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+	serialized := []byte(`{ "security/cors": {
 			}
 		}`)
 	if err := json.Unmarshal(serialized, &sampleCfg); err != nil {
@@ -123,7 +123,7 @@ func TestAllowOriginEmpty(t *testing.T) {
 
 func TestOptionsSuccess(t *testing.T) {
 	sampleCfg := map[string]interface{}{}
-	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+	serialized := []byte(`{ "security/cors": {
 				"options_success_status": 200
 			}
 		}`)
@@ -153,7 +153,7 @@ func TestOptionsSuccess(t *testing.T) {
 
 func TestAllowPrivateNetwork(t *testing.T) {
 	sampleCfg := map[string]interface{}{}
-	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+	serialized := []byte(`{ "security/cors": {
 				"allow_private_network": true
 			}
 		}`)
@@ -183,7 +183,7 @@ func TestAllowPrivateNetwork(t *testing.T) {
 
 func TestOptionPasstrough(t *testing.T) {
 	sampleCfg := map[string]interface{}{}
-	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+	serialized := []byte(`{ "security/cors": {
 				"options_passthrough": true
 			}
 		}`)
