@@ -9,11 +9,13 @@ import (
 	"net/http/httptest"
 	"regexp"
 	"strings"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/luraproject/lura/v2/config"
-	"github.com/luraproject/lura/v2/logging"
+	"github.com/luraproject/lura/v3/config"
+	"github.com/luraproject/lura/v3/logging"
 )
 
 func TestInvalidCfg(t *testing.T) {
@@ -26,7 +28,7 @@ func TestInvalidCfg(t *testing.T) {
 
 func TestNew(t *testing.T) {
 	sampleCfg := map[string]interface{}{}
-	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+	serialized := []byte(`{ "security/cors": {
 			"allow_origins": [ "http://foobar.com" ],
 			"allow_methods": [ "GET" ],
 			"max_age": "2h"
@@ -62,7 +64,7 @@ func TestNew(t *testing.T) {
 
 func TestAllowOriginWildcard(t *testing.T) {
 	sampleCfg := map[string]interface{}{}
-	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+	serialized := []byte(`{ "security/cors": {
 			"allow_origins": [ "*" ]
 			}
 		}`)
@@ -95,7 +97,7 @@ func TestAllowOriginWildcard(t *testing.T) {
 
 func TestAllowOriginEmpty(t *testing.T) {
 	sampleCfg := map[string]interface{}{}
-	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+	serialized := []byte(`{ "security/cors": {
 			}
 		}`)
 	json.Unmarshal(serialized, &sampleCfg)
@@ -132,12 +134,12 @@ func ExampleNewRunServerWithLogger() {
 		return nil
 	}
 
-	buf := bytes.NewBuffer(nil)
+	buf := new(syncBuffer)
 	l, _ := logging.NewLogger("DEBUG", buf, "")
 	corsRunServer := NewRunServerWithLogger(next, l)
 
 	sampleCfg := map[string]interface{}{}
-	serialized := []byte(`{ "github_com/devopsfaith/krakend-cors": {
+	serialized := []byte(`{ "security/cors": {
 			"allow_origins": [ "http://foobar.com" ],
 			"allow_methods": [ "GET" ],
 			"max_age": "2h",
@@ -158,7 +160,7 @@ func ExampleNewRunServerWithLogger() {
 	}
 
 	res := httptest.NewRecorder()
-	req, _ := http.NewRequest("OPTIONS", "http://example.com/", http.NoBody)
+	req, _ := http.NewRequest("OPTIONS", "http://example.com/", http.NoBody) // skipcq GO-S1028
 	req.Header.Add("Origin", "http://foobar.com")
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
@@ -171,7 +173,7 @@ func ExampleNewRunServerWithLogger() {
 	fmt.Println("'" + res.Body.String() + "'")
 
 	res = httptest.NewRecorder()
-	req, _ = http.NewRequest("GET", "http://example.com/", http.NoBody)
+	req, _ = http.NewRequest("GET", "http://example.com/", http.NoBody) // skipcq GO-S1028
 	req.Header.Add("Origin", "http://foobar.com")
 	req.Header.Add("Access-Control-Request-Method", "GET")
 	req.Header.Add("Access-Control-Request-Headers", "origin")
@@ -184,7 +186,7 @@ func ExampleNewRunServerWithLogger() {
 	fmt.Println("'" + res.Body.String() + "'")
 
 	re := regexp.MustCompile(`(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\s+)`)
-	fmt.Println(re.ReplaceAllString(buf.String(), ""))
+	fmt.Println(re.ReplaceAllString(buf.waitForLines(5), ""))
 
 	// output:
 	// 204
@@ -224,6 +226,40 @@ func ExampleNewRunServerWithLogger() {
 	// DEBUG: [CORS] Preflight response headers: map[Access-Control-Allow-Headers:[origin] Access-Control-Allow-Methods:[GET] Access-Control-Allow-Origin:[http://foobar.com] Access-Control-Max-Age:[7200] Vary:[Origin, Access-Control-Request-Method, Access-Control-Request-Headers]]
 	// DEBUG: [CORS] Handler: Actual request
 	// DEBUG: [CORS] Actual response added headers: map[Access-Control-Allow-Origin:[http://foobar.com] Vary:[Origin]]
+}
+
+// syncBuffer is the log sink for the examples exercising the debug output of
+// the CORS middleware. NewWithLogger forwards that output through a pipe read
+// by a background goroutine, so the writes it produces are concurrent with the
+// reads done by the test.
+type syncBuffer struct {
+	mu  sync.Mutex
+	buf bytes.Buffer
+}
+
+func (b *syncBuffer) Write(p []byte) (int, error) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return b.buf.Write(p)
+}
+
+func (b *syncBuffer) String() string {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return b.buf.String()
+}
+
+// waitForLines returns the contents of the buffer once it holds n lines, giving
+// the forwarding goroutine the chance to catch up. It gives up after a second
+// so a missing line shows up as a failed assertion instead of a hang.
+func (b *syncBuffer) waitForLines(n int) string {
+	for range 1000 {
+		if s := b.String(); strings.Count(s, "\n") >= n {
+			return s
+		}
+		time.Sleep(time.Millisecond)
+	}
+	return b.String()
 }
 
 var allHeaders = []string{
