@@ -3,11 +3,11 @@ package cors
 import (
 	"time"
 
-	"github.com/luraproject/lura/v2/config"
+	"github.com/luraproject/lura/v3/config"
 )
 
 // Namespace is the key to look for extra configuration details
-const Namespace = "github_com/devopsfaith/krakend-cors"
+const Namespace = "security/cors"
 
 // Config holds the configuration of CORS
 type Config struct {
